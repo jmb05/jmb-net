@@ -188,12 +188,11 @@ public class BufferWrapper {
         return rawData;
     }
 
-    public void encrypt(Encryption encryption) {
+    public void encrypt(Encryption encryption, int offset, int end) {
         if (!encryption.isUsable()) return;
         byte[] fullData = toByteArray();
-        byte[] data = Arrays.copyOfRange(fullData, 1, fullData.length);
+        byte[] data = Arrays.copyOfRange(fullData, offset, end);
         data = encryption.encrypt(data);
-        Logger.info(new String(data, StandardCharsets.UTF_8));
         buffer.readerOffset(0);
         byte encryptionByte = getByte();
         buffer.readerOffset(0);
@@ -202,13 +201,13 @@ public class BufferWrapper {
         buffer.writeBytes(data);
     }
 
-    public void decrypt(Encryption encryption) {
+    public void decrypt(Encryption encryption, int offset, int end) {
         if (!encryption.isUsable()) return;
         if (getEncryptionByte() == 0) return;
+        buffer.readerOffset(0);
         byte[] fullData = toByteArray();
-        byte[] data = Arrays.copyOfRange(fullData, 1, fullData.length - 1);
+        byte[] data = Arrays.copyOfRange(fullData, offset, end);
         try {
-            Logger.info(new String(data, StandardCharsets.UTF_8));
             data = encryption.decrypt(data);
         } catch (IllegalArgumentException e) {
             Logger.warn(e);

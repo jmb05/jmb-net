@@ -36,7 +36,7 @@ public class PacketTest {
 
     public static class TestPacket extends Packet {
 
-        protected int testInt;
+        protected int testInt = 87542;
 
         @Override
         public void deconstruct(BufferWrapper buf) {
@@ -57,7 +57,7 @@ public class PacketTest {
     public static class TestPacketHandler implements PacketHandler<TestPacket> {
         @Override
         public void handle(TestPacket packet) {
-            Logger.info("Handle TestPacket");
+            Logger.info("Handle TestPacket: " + packet.testInt);
         }
     }
 }

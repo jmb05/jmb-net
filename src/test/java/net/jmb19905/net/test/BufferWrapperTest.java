@@ -46,9 +46,9 @@ public class BufferWrapperTest {
         encryption1.setReceiverPublicKey(encryption2.getPublicKey());
         encryption2.setReceiverPublicKey(encryption1.getPublicKey());
 
-        buffer.encrypt(encryption1);
-        assertEquals((byte) 1, buffer.getByte());
-        buffer.decrypt(encryption2);
+        buffer.encrypt(encryption1, 1, buffer.getSize());
+        assertEquals((byte) 1, buffer.checkEncryptionLevel());
+        buffer.decrypt(encryption2, 1, buffer.getSize());
     }
 
     @Test
@@ -64,13 +64,13 @@ public class BufferWrapperTest {
         encryption3.setReceiverPublicKey(encryption4.getPublicKey());
         encryption4.setReceiverPublicKey(encryption3.getPublicKey());
 
-        buffer.encrypt(encryption1);
-        assertEquals((byte) 1, buffer.getByte());
-        buffer.encrypt(encryption3);
-        assertEquals((byte) 2, buffer.getByte());
-        buffer.decrypt(encryption4);
-        assertEquals((byte) 1, buffer.getByte());
-        buffer.decrypt(encryption2);
+        buffer.encrypt(encryption1, 1, buffer.getSize());
+        assertEquals((byte) 1, buffer.checkEncryptionLevel());
+        buffer.encrypt(encryption3, 1, buffer.getSize());
+        assertEquals((byte) 2, buffer.checkEncryptionLevel());
+        buffer.decrypt(encryption4, 1, buffer.getSize());
+        assertEquals((byte) 1, buffer.checkEncryptionLevel());
+        buffer.decrypt(encryption2, 1, buffer.getSize());
     }
 
     @AfterEach

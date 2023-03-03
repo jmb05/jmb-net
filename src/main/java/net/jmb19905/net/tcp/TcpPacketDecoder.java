@@ -26,7 +26,7 @@ public class TcpPacketDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, Buffer in) {
         BufferWrapper buffer = new BufferWrapper(in);
         Logger.trace("Received buffer - Size: " + buffer.getSize());
-        if (encryption != null) buffer.decrypt(encryption);
+        if (encryption != null) buffer.decrypt(encryption, 1, in.readableBytes() - 1);
         buffer.getEncryptionByte();
         Optional<Packet> packetOpt = Packet.constructPacket(buffer);
         if (packetOpt.isEmpty()) return;

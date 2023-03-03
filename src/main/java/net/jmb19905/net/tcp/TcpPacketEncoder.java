@@ -29,6 +29,6 @@ public class TcpPacketEncoder extends MessageToByteEncoder<Packet> {
         BufferWrapper buffer = new BufferWrapper(out);
         Packet.deconstructPacket(msg, buffer);
         if (encryption == null) return;
-        buffer.encrypt(encryption);
+        buffer.encrypt(encryption, 1, buffer.getSize());
     }
 }

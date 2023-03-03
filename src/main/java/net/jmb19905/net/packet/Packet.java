@@ -2,7 +2,6 @@ package net.jmb19905.net.packet;
 
 import net.jmb19905.net.buffer.BufferSerializable;
 import net.jmb19905.net.buffer.BufferWrapper;
-import net.jmb19905.util.crypto.Encryption;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;

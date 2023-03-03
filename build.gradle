@@ -1,3 +1,4 @@
+//file:noinspection GroovyAssignabilityCheck
 plugins {
     id 'java'
     id 'maven-publish'
@@ -25,4 +26,27 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            url 'https://repo.bennettcraft.com/releases'
+            credentials {
+                username 'jmb'
+                password System.getenv("JMB_REPO_TOKEN")
+            }
+        }
+    }
+
+    publications {
+        maven(MavenPublication) {
+            description = 'JMB Networking Library based on Netty'
+            groupId = group
+            artifactId = 'jmb-net'
+            version = version
+
+            from components.java
+        }
+    }
 }
