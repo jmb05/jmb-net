@@ -1,11 +1,13 @@
 package net.jmb19905.net.test;
 
 import net.jmb19905.net.Client;
-import net.jmb19905.net.Connection;
+import net.jmb19905.net.NetThread;
 import net.jmb19905.net.Server;
 import net.jmb19905.net.event.ActiveEventListener;
 import net.jmb19905.net.event.ReadEventListener;
 import net.jmb19905.net.packet.PacketRegistry;
+import net.jmb19905.net.tcp.ClientTcpThread;
+import net.jmb19905.net.tcp.ServerTcpThread;
 import net.jmb19905.util.Logger;
 import net.jmb19905.util.crypto.Encryption;
 import org.junit.jupiter.api.AfterEach;
@@ -20,8 +22,8 @@ public class SendingTest {
 
     Server server;
     Client client;
-    Connection connectionServer;
-    Connection connectionClient;
+    NetThread netThreadServer;
+    NetThread netThreadClient;
     AtomicBoolean b1;
     AtomicBoolean b2;
 
@@ -32,21 +34,21 @@ public class SendingTest {
         b1 = new AtomicBoolean(false);
         b2 = new AtomicBoolean(false);
         server = new Server();
-        connectionServer = server.addTcp(12121);
-        connectionServer.getHandler().addEventListener((ActiveEventListener) evt -> {
+        netThreadServer = server.addTcp(12121);
+        ((ServerTcpThread) netThreadServer).addDefaultEventListener((ActiveEventListener) evt -> {
             Logger.info("Server Channel active...");
             Logger.info("Server Sending TestPacket");
             evt.getContext().send(new PacketTest.TestPacket());
         });
         client = new Client("localhost");
-        connectionServer.getHandler().addEventListener((ReadEventListener) evt -> b2.set(true));
-        connectionClient = client.addTcp(12121);
-        connectionClient.getHandler().addEventListener((ActiveEventListener) evt -> {
+        ((ServerTcpThread) netThreadServer).addDefaultEventListener((ReadEventListener) evt -> b2.set(true));
+        netThreadClient = client.addTcp(12121);
+        ((ClientTcpThread) netThreadClient).addEventListener((ActiveEventListener) evt -> {
             Logger.info("Client Channel active...");
             Logger.info("Client Sending TestPacket");
             evt.getContext().send(new PacketTest.TestPacket());
         });
-        connectionClient.getHandler().addEventListener((ReadEventListener) evt -> b1.set(true));
+        ((ClientTcpThread) netThreadClient).getHandler().addEventListener((ReadEventListener) evt -> b1.set(true));
     }
 
     @Test
@@ -62,8 +64,8 @@ public class SendingTest {
         serverEncryption.setReceiverPublicKey(clientEncryption.getPublicKey());
         clientEncryption.setReceiverPublicKey(serverEncryption.getPublicKey());
 
-        connectionServer.setEncryption(serverEncryption);
-        connectionClient.setEncryption(clientEncryption);
+        ((ServerTcpThread) netThreadServer).addDefaultEventListener((ActiveEventListener) l -> netThreadServer.setEncryption(l.getContext().remoteAddress(), serverEncryption));
+        ((ClientTcpThread) netThreadClient).setEncryption(clientEncryption);
 
         server.start();
         client.start();

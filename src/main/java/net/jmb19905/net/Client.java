@@ -1,6 +1,6 @@
 package net.jmb19905.net;
 
-import net.jmb19905.net.tcp.ClientTcpConnection;
+import net.jmb19905.net.tcp.ClientTcpThread;
 
 public class Client extends Endpoint {
 
@@ -11,7 +11,7 @@ public class Client extends Endpoint {
     }
 
     @Override
-    public Connection addTcp(int port) {
-        return addConnection("client_tcp", new ClientTcpConnection(server, port));
+    public NetThread addTcp(int port) {
+        return addThread("client_tcp", new ClientTcpThread(server, port));
     }
 }

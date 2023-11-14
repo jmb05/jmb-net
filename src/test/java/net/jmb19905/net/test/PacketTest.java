@@ -1,6 +1,7 @@
 package net.jmb19905.net.test;
 
 import net.jmb19905.net.buffer.BufferWrapper;
+import net.jmb19905.net.handler.HandlingContext;
 import net.jmb19905.net.packet.Packet;
 import net.jmb19905.net.packet.PacketHandler;
 import net.jmb19905.net.packet.PacketRegistry;
@@ -56,7 +57,7 @@ public class PacketTest {
 
     public static class TestPacketHandler implements PacketHandler<TestPacket> {
         @Override
-        public void handle(TestPacket packet) {
+        public void handle(HandlingContext context, TestPacket packet) {
             Logger.info("Handle TestPacket: " + packet.testInt);
         }
     }

@@ -43,7 +43,7 @@ public class PacketChannelHandler extends ChannelHandlerAdapter {
             Logger.error("No Packet Handler registered for Packet: " + packet + " on this side");
             return;
         }
-        handlerOpt.get().handle(packet);
+        handlerOpt.get().handle(new HandlingContext(ctx, this), packet);
         eventHandler.performEvent(new ReadEvent(createContext(ctx), packet));
     }
 

@@ -1,10 +1,10 @@
 package net.jmb19905.net;
 
-import net.jmb19905.net.tcp.ServerTcpConnection;
+import net.jmb19905.net.tcp.ServerTcpThread;
 
 public class Server extends Endpoint {
     @Override
-    public Connection addTcp(int port) {
-        return addConnection("server_tcp", new ServerTcpConnection(port));
+    public NetThread addTcp(int port) {
+        return addThread("server_tcp", new ServerTcpThread(port));
     }
 }

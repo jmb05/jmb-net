@@ -5,17 +5,19 @@ import io.netty5.channel.*;
 import io.netty5.channel.nio.NioHandler;
 import io.netty5.channel.socket.SocketChannel;
 import io.netty5.channel.socket.nio.NioSocketChannel;
-import net.jmb19905.net.Connection;
+import net.jmb19905.net.NetThread;
+import net.jmb19905.net.event.NetworkEvent;
 import net.jmb19905.net.handler.PacketChannelHandler;
 import net.jmb19905.util.Logger;
 import net.jmb19905.util.crypto.Encryption;
+import net.jmb19905.util.events.EventListener;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutionException;
+import java.net.SocketAddress;
 
-public class ClientTcpConnection implements Connection, Runnable {
+public class ClientTcpThread implements NetThread, Runnable {
     
-    private final Thread thread;
+    private final Thread thread = new Thread(this);
     private final EventLoopGroup group;
     private final InetSocketAddress serverAddress;
     private Channel channel;
@@ -24,9 +26,8 @@ public class ClientTcpConnection implements Connection, Runnable {
     private final TcpPacketDecoder decoder;
     private Encryption encryption;
 
-    public ClientTcpConnection(String server, int port) {
+    public ClientTcpThread(String server, int port) {
         InetSocketAddress serverAddress1;
-        this.thread = new Thread(this);
         try {
             serverAddress1 = InetSocketAddress.createUnresolved(server, port);
         } catch (IllegalArgumentException e) {
@@ -55,24 +56,56 @@ public class ClientTcpConnection implements Connection, Runnable {
         }
     }
 
-    @Override
-    public Channel getChannel() {
-        return channel;
+    public InetSocketAddress getServerAddress() {
+        return this.serverAddress;
     }
 
-    @Override
+    /** @deprecated */
+    @Deprecated
+    public Channel getChannel(SocketAddress addr) {
+        return this.channel;
+    }
+
+    public Channel getChannel() {
+        return this.channel;
+    }
+
+    /** @deprecated */
+    @Deprecated
+    public PacketChannelHandler getHandler(SocketAddress addr) {
+        return this.handler;
+    }
+
     public PacketChannelHandler getHandler() {
-        return handler;
+        return this.handler;
+    }
+
+    /** @deprecated */
+    @Deprecated
+    public void setEncryption(SocketAddress addr, Encryption encryption) {
+        this.encryption = encryption;
+        this.encoder.setEncryption(encryption);
+        this.decoder.setEncryption(encryption);
     }
 
     public void setEncryption(Encryption encryption) {
         this.encryption = encryption;
-        encoder.setEncryption(encryption);
-        decoder.setEncryption(encryption);
+        this.encoder.setEncryption(encryption);
+        this.decoder.setEncryption(encryption);
+    }
+
+    /** @deprecated */
+    @Deprecated
+    public Encryption getEncryption(SocketAddress addr) {
+        return this.encryption;
     }
 
     public Encryption getEncryption() {
-        return encryption;
+        return this.encryption;
+    }
+
+    public <L extends EventListener<? extends NetworkEvent>> void addEventListener(L listener) {
+        this.handler.addEventListener(listener);
     }
 
     @Override
@@ -97,8 +130,8 @@ public class ClientTcpConnection implements Connection, Runnable {
 
             channel = bootstrap.connect(serverAddress).asStage().get();
             channel.closeFuture().asStage().sync();
-        } catch (ExecutionException | InterruptedException e) {
-            Logger.error(e);
+        } catch (Exception e) {
+            handler.channelExceptionCaught(null, e);
         } finally {
             group.shutdownGracefully();
         }

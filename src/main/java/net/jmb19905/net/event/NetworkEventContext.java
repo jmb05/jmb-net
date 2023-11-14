@@ -4,6 +4,8 @@ import io.netty5.channel.ChannelHandlerContext;
 import net.jmb19905.net.handler.PacketChannelHandler;
 import net.jmb19905.util.events.EventContext;
 
+import java.net.SocketAddress;
+
 public class NetworkEventContext extends EventContext<PacketChannelHandler> {
 
     private final PacketChannelHandler handler;
@@ -27,5 +29,8 @@ public class NetworkEventContext extends EventContext<PacketChannelHandler> {
 
     public ChannelHandlerContext getContext() {
         return ctx;
+    }
+    public SocketAddress remoteAddress() {
+        return this.ctx.channel().remoteAddress();
     }
 }

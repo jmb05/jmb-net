@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'net.jmb19905'
-version '1.0.1'
+version '1.0.10'
 
 repositories {
     mavenCentral()
@@ -19,7 +19,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     implementation "org.jetbrains:annotations:23.0.0"
-    implementation "net.jmb19905:jmb-utilities:1.1.1"
+    implementation "net.jmb19905:jmb-utilities:1.2.0"
     //noinspection VulnerableLibrariesLocal
     implementation "io.netty:netty5-all:5.0.0.Alpha5"
 }

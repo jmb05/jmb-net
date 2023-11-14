@@ -5,39 +5,39 @@ import java.util.Map;
 
 public abstract class Endpoint {
 
-    private final Map<String, Connection> connections = new HashMap<>();
+    private final Map<String, NetThread> connections = new HashMap<>();
     private boolean running = false;
 
-    public abstract Connection addTcp(int port);
+    public abstract NetThread addTcp(int port);
 
-    public Connection addConnection(String name, Connection connection) {
-        this.connections.put(name, connection);
-        if (running) connection.start();
-        return connection;
+    public NetThread addThread(String name, NetThread netThread) {
+        this.connections.put(name, netThread);
+        if (running) netThread.start();
+        return netThread;
     }
 
-    public Connection getConnection(String name) {
+    public NetThread getThread(String name) {
         return connections.get(name);
     }
 
-    public Map<String, Connection> getConnections() {
+    public Map<String, NetThread> getThreads() {
         return connections;
     }
 
     public void start() {
         for (String name : connections.keySet()) {
-            Connection connection = connections.get(name);
-            if (connection == null) continue;
-            connection.start();
+            NetThread netThread = connections.get(name);
+            if (netThread == null) continue;
+            netThread.start();
         }
         running = true;
     }
 
     public void stop() {
         for (String name : connections.keySet()) {
-            Connection connection = connections.get(name);
-            if (connection == null) continue;
-            connection.stop();
+            NetThread netThread = connections.get(name);
+            if (netThread == null) continue;
+            netThread.stop();
         }
         running = false;
 

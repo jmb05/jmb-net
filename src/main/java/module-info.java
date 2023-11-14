@@ -4,6 +4,7 @@ module jmb.net {
     requires io.netty5.common;
     requires org.jetbrains.annotations;
     requires io.netty5.buffer;
+    requires io.netty5.codec;
 
     exports net.jmb19905.net;
     exports net.jmb19905.net.buffer;
